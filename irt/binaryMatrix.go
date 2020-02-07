@@ -1,14 +1,15 @@
 package irt
 
-import (
-	"database/sql"
-	"fmt"
-	"gopkg.in/reform.v1"
-	"log"
-)
+import "log"
 
-var Rdb *reform.DB
-var Db *sql.DB
+type BinaryMatrix struct {
+	Id              []int
+	Number          []int
+	Value           [][]int
+	IndividualScore [] int
+	RightAnswer     []int
+	WrongAnswer     []int
+}
 
 func (v *BinaryMatrix) TcBinaryMatrix() {
 	v.Id = make([]int, 11)
@@ -34,28 +35,24 @@ func (v *BinaryMatrix) TcBinaryMatrix() {
 	v.Value[10] = []int{1, 1, 1, 0, 1, 1, 1, 1, 1}
 
 }
-func (v *BinaryMatrix) Ffull() {
-	var counter int
-	zadanie := len(v.Number)
-	people := len(v.Value)
 
-	for i := 0; i < zadanie; i++ {
-		for j := 0; j < people; j++ {
-			fmt.Print("-", ":", v.Value[j][i], "	")
-			if v.Value[j][i] == 1 {
-				counter++
+func (v *BinaryMatrix) Ffull() {
+	taskLen := len(v.Number)
+	peopleCount := len(v.Value)
+
+	for i := 0; i < taskLen; i++ {
+		if v.RightAnswer[i] == taskLen || v.WrongAnswer[i] == 0 {
+			for j := 0; j < peopleCount; j++ {
+				newSlice := append(v.Value[i][:j], v.Value[i][j+1:]...)
+				v.Value[i] = newSlice
+				taskLen -= 1
 			}
 		}
-		fmt.Print("  conter:", counter)
-		if counter == 11 {
-			newSlice := append(v.Value[:i], v.Value[i+1:]...)
-			v.Value = newSlice
-		}
-		counter = 0
-		fmt.Println()
 	}
 }
+
 func (v *BinaryMatrix) CBinaryMatrix() {
+
 	err := Db.QueryRow(`select u.Id,count(u.Id),
 case when a.answer = q.true_answer then 1
 else 0 end as bValue
@@ -80,15 +77,23 @@ func (v *BinaryMatrix) IndividualS() {
 	}
 }
 
-//func(v *binaryMatrix) cBinaryMatrix()
-//{
-//}
-//func(v *binaryMatrix) cBinaryMatrix()
-//{
-//}
-//func(v *binaryMatrix) cBinaryMatrix()
-//{
-//}
-//func(v *binaryMatrix) cBinaryMatrix()
-//{
-//}
+func (v *BinaryMatrix) CountRWAnswer() {
+	zadanie := len(v.Number)
+	people := len(v.Value)
+	var counter_r int
+	var counter_w int
+
+	for i := 0; i < zadanie; i++ {
+		for j := 0; j < people; j++ {
+			if v.Value[j][i] == 1 {
+				counter_r++
+			} else {
+				counter_w++
+			}
+		}
+
+		v.RightAnswer[i] = counter_r
+		v.WrongAnswer[i] = counter_w
+	}
+
+}

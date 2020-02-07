@@ -29,7 +29,8 @@ func main() {
 	fmt.Println("Dddd")
 	binar := irt.BinaryMatrix{}
 	binar.TcBinaryMatrix()
-	binar.Ffull()
+		binar.Ffull()
+
 	fmt.Println(len(binar.Value), "x", len(binar.Value[0]))
 	//zadanie := len(binar.Number)
 	//people := len(binar.Value)
@@ -39,6 +40,8 @@ func main() {
 	//	}
 	//	fmt.Println()
 	//}
-
+	//var k irt.PIniter
+	//kz := irt.InitPreparedness{}
+	//kz.P(k)
 
 }
